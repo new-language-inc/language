@@ -3,24 +3,7 @@
 #include <string>
 #include <vector>
 
-enum class TokenType {
-    IDENTIFIER,
-    L_BRACKET,
-    R_BRACKET,
-    INT,
-    FLOAT,
-    STRING,
-    OPERATOR,
-    PUNCTUATOR,
-    LINE_END,
-    EOF_TOKEN,
-};
-
-struct Token {
-    TokenType type;
-    std::string lexeme;
-    int line;
-};
+#include "token.hpp"
 
 class Lexer {
   private:
@@ -50,27 +33,8 @@ class Lexer {
         }
     }
 
-    TokenType _scan_token_type(const std::string &token) {
-        if (token == "int") {
-            return TokenType::INT;
-        } else if (token == "float") {
-            return TokenType::FLOAT;
-        } else if (token == "string") {
-            return TokenType::STRING;
-        } else if (token == "(") {
-            return TokenType::L_BRACKET;
-        } else if (token == ")") {
-            return TokenType::R_BRACKET;
-        } else if (token == ";") {
-            line += 1;
-            return TokenType::LINE_END;
-        } else {
-            return TokenType::IDENTIFIER;
-        }
-    }
-
     Token _generate_token(const std::string &token) {
-        return Token(_scan_token_type(token), token, line);
+        return Token(scan_token_type(token), token, line);
     }
 
   public:
@@ -86,5 +50,3 @@ class Lexer {
         return tokens;
     }
 };
-
-int main() { return 0; }
