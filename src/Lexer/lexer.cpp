@@ -1,52 +1,60 @@
 // The main file for the lexer implementation.
 
-#include <string>
-#include <vector>
+#include "lexer.hpp"
 
-#include "token.hpp"
+#include <cctype>
 
-class Lexer {
-  private:
-    std::string input;
+bool lexer::_is_alpha(const char &c) { return (isalpha(c) || c == '_'); }
 
-    std::vector<Token> tokens;
+bool lexer::_is_alphanumeric(const char &c) { return (_is_alpha(c) || isdigit(c)); }
 
-    std::string next_word;
-    Token token;
-
+std::vector<Token> lexer::lex() {
     int position = 0;
     int line = 1;
+    tokens.clear();
+    while (not _is_at_end(position)) {
+        const char current = input[position];
 
-    std::string _get_next_word() {
-        int start = position;
-        while (_is_at_end() && !isspace(input[position])) {
-            position++;
+        switch (current) {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\v':
+        case '\f':
+        case '\n':
+            if (current == '\n') {
+                line++;
+            }
+            do {
+                ++position;
+            } while (not _is_at_end(position) &&
+                     std::isspace(static_cast<unsigned char>(input[position])));
+            continue;
+        case '/':
+            if (not _is_at_end(position + 1) && input[position + 1] == '/') {
+                position += 2;
+                while (not _is_at_end(position) && input[position] != '\n') {
+                    ++position;
+                }
+                continue;
+            }
+            break;
+        default:
+            break;
         }
-        return input.substr(start, position - start);
-    }
 
-    bool _is_at_end() {
-        if (position < input.size()) {
-            return true;
+        const int start = position;
+        if (_is_alphanumeric(current)) {
+            do {
+                ++position;
+            } while (not _is_at_end(position) && _is_alphanumeric(input[position]));
         } else {
-            return false;
+            ++position;
         }
-    }
 
-    Token _generate_token(const std::string &token) {
-        return Token(scan_token_type(token), token, line);
+        const std::string lexeme = input.substr(start, position - start);
+        tokens.push_back(_generate_token(lexeme, line));
     }
-
-  public:
-    Lexer(std::string input) { this->input = input; }
-
-    std::vector<Token> parse() {
-        while (not _is_at_end()) {
-            next_word = _get_next_word();
-            token = _generate_token(next_word);
-            tokens.push_back(token);
-        }
-        tokens.push_back(Token(TokenType::EOF_TOKEN, "", 0));
-        return tokens;
-    }
+    tokens.push_back(Token(TokenType::EOF_TOKEN, "", 0));
+    return tokens;
 };
