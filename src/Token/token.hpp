@@ -12,7 +12,9 @@ enum class TokenType {
     FLOAT,
     STRING,
     OPERATOR,
-    PUNCTUATOR,
+    RETURN_MARKER,
+    TYPE_MARKER,
+    SCOPE_RESOLUTION,
     LINE_END,
     EOF_TOKEN,
 };

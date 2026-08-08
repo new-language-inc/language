@@ -27,8 +27,10 @@ class lexer {
     lexer(std::string input) { this->input = input; }
 
     std::vector<Token> lex();
-    bool _is_alpha(const char &c);
-    bool _is_alphanumeric(const char &c);
+    bool is_alpha(const char &c);
+    bool is_alphanumeric(const char &c);
+    bool is_special_character(const char &c);
+    bool is_special_sequence(const std::string &sequence);
 };
 
 #endif

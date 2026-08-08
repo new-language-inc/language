@@ -4,9 +4,17 @@
 
 #include <cctype>
 
-bool lexer::_is_alpha(const char &c) { return (isalpha(c) || c == '_'); }
+bool lexer::is_alpha(const char &c) { return (isalpha(c) || c == '_'); }
 
-bool lexer::_is_alphanumeric(const char &c) { return (_is_alpha(c) || isdigit(c)); }
+bool lexer::is_alphanumeric(const char &c) { return (is_alpha(c) || isdigit(c)); }
+
+bool lexer::is_special_character(const char &c) {
+    return (c == '(' || c == ')' || c == ';' || c == ':' || c == '-' || c == '>' || c == '/');
+}
+
+bool lexer::is_special_sequence(const std::string &sequence) {
+    return (sequence == "->" || sequence == "::");
+}
 
 std::vector<Token> lexer::lex() {
     int position = 0;
@@ -44,10 +52,16 @@ std::vector<Token> lexer::lex() {
         }
 
         const int start = position;
-        if (_is_alphanumeric(current)) {
+        if (is_alphanumeric(current)) {
             do {
                 ++position;
-            } while (not _is_at_end(position) && _is_alphanumeric(input[position]));
+            } while (not _is_at_end(position) && is_alphanumeric(input[position]));
+        } else if (is_special_character(current)) {
+            if (is_special_sequence(input.substr(position, 2))) {
+                position += 2;
+            } else {
+                ++position;
+            }
         } else {
             ++position;
         }
