@@ -4,71 +4,101 @@
 
 #include <cctype>
 
-bool lexer::is_alpha(const char &c) { return (isalpha(c) || c == '_'); }
+bool lexer::is_alpha(const char &c) {
+    return (std::isalpha(static_cast<unsigned char>(c)) || c == '_');
+}
 
-bool lexer::is_alphanumeric(const char &c) { return (is_alpha(c) || isdigit(c)); }
+bool lexer::is_alphanumeric(const char &c) {
+    return (is_alpha(c) || std::isdigit(static_cast<unsigned char>(c)));
+}
 
 bool lexer::is_special_character(const char &c) {
     return (c == '(' || c == ')' || c == ';' || c == ':' || c == '-' || c == '>' || c == '/');
 }
 
-bool lexer::is_special_sequence(const std::string &sequence) {
+bool lexer::is_special_sequence(const std::string_view &sequence) {
     return (sequence == "->" || sequence == "::");
 }
 
-std::vector<Token> lexer::lex() {
-    int position = 0;
-    int line = 1;
-    tokens.clear();
+void lexer::_skip_whitespace_and_comments(std::size_t &position, int &line) {
     while (not _is_at_end(position)) {
-        const char current = input[position];
+        const char current = _peek(position);
 
-        switch (current) {
-        case ' ':
-        case '\t':
-        case '\r':
-        case '\v':
-        case '\f':
-        case '\n':
-            if (current == '\n') {
-                line++;
-            }
-            do {
-                ++position;
-            } while (not _is_at_end(position) &&
-                     std::isspace(static_cast<unsigned char>(input[position])));
+        if (current == '\n') {
+            ++line;
+            ++position;
             continue;
-        case '/':
-            if (not _is_at_end(position + 1) && input[position + 1] == '/') {
-                position += 2;
-                while (not _is_at_end(position) && input[position] != '\n') {
-                    ++position;
-                }
-                continue;
-            }
-            break;
-        default:
-            break;
         }
 
-        const int start = position;
-        if (is_alphanumeric(current)) {
-            do {
-                ++position;
-            } while (not _is_at_end(position) && is_alphanumeric(input[position]));
-        } else if (is_special_character(current)) {
-            if (is_special_sequence(input.substr(position, 2))) {
-                position += 2;
-            } else {
+        if (std::isspace(static_cast<unsigned char>(current))) {
+            ++position;
+            continue;
+        }
+
+        if (current == '/' && not _is_at_end(position + 1) && _peek(position + 1) == '/') {
+            position += 2;
+            while (not _is_at_end(position) && _peek(position) != '\n') {
                 ++position;
             }
+            continue;
+        }
+
+        break;
+    }
+}
+
+void lexer::_consume_alphanumeric(std::size_t &position) {
+    do {
+        ++position;
+    } while (not _is_at_end(position) && is_alphanumeric(_peek(position)));
+}
+
+void lexer::_consume_special_sequence_or_operator(std::size_t &position) {
+    if (not _is_at_end(position + 1) &&
+        is_special_sequence(std::string_view(input.data() + position, 2))) {
+        position += 2;
+        return;
+    }
+
+    ++position;
+}
+
+std::vector<Token> lexer::lex() {
+    std::size_t position = 0;
+    int line = 1;
+    tokens.clear();
+
+    while (not _is_at_end(position)) {
+        const char current = _peek(position);
+        // Although the if statements below are not strictly necessary and are technically
+        // duplicated, they improve readability for little cost.
+
+        if (std::isspace(static_cast<unsigned char>(current))) {
+            _skip_whitespace_and_comments(position, line);
+            continue;
+        }
+
+        if (current == '/' && position + 1 < input.length() && _peek(position + 1) == '/') {
+            _skip_whitespace_and_comments(position, line);
+            continue;
+        }
+        }
+
+        const std::size_t start = position;
+
+        if (is_alphanumeric(current)) {
+            _consume_alphanumeric(position);
+        } else if (is_special_character(current)) {
+            _consume_special_sequence_or_operator(position);
         } else {
             ++position;
+            // TODO: raise an invalid character error here.
         }
 
         const std::string lexeme = input.substr(start, position - start);
         tokens.push_back(_generate_token(lexeme, line));
     }
+
     tokens.push_back(Token(TokenType::EOF_TOKEN, "", 0));
     return tokens;
 };

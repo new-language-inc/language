@@ -2,6 +2,7 @@
 #define LEXER_HPP
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "token.hpp"
@@ -12,12 +13,16 @@ class lexer {
 
     std::vector<Token> tokens;
 
-    std::string lexeme;
-    Token token;
+    bool _is_at_end(const std::size_t &position) const { return position >= input.length(); }
 
-    bool _is_at_end(const int &position) { return (position >= input.length()); }
+    char _peek(const std::size_t &position) const {
+        return position < input.length() ? input[position] : '\0';
+    }
 
+    void _skip_whitespace_and_comments(std::size_t &position, int &line);
     char _peek(const int &position) { return input[position + 1]; }
+    void _consume_alphanumeric(std::size_t &position);
+    void _consume_special_sequence_or_operator(std::size_t &position);
 
     Token _generate_token(const std::string &lexeme, const int &line) {
         return Token(scan_token_type(lexeme), lexeme, line);
@@ -30,7 +35,7 @@ class lexer {
     bool is_alpha(const char &c);
     bool is_alphanumeric(const char &c);
     bool is_special_character(const char &c);
-    bool is_special_sequence(const std::string &sequence);
+    bool is_special_sequence(const std::string_view &sequence);
 };
 
 #endif
