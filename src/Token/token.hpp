@@ -8,6 +8,7 @@ enum class TokenType {
     IDENTIFIER,
     L_BRACKET,
     R_BRACKET,
+    STRING_LITERAL,
     INT,
     FLOAT,
     STRING,

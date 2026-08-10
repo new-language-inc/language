@@ -47,6 +47,25 @@ void lexer::_skip_whitespace_and_comments(std::size_t &position, int &line) {
     }
 }
 
+void lexer::_consume_string_literal(std::size_t &position, int &line) {
+    const std::size_t start = position;
+    ++position;
+
+    while (not _is_at_end(position) && _peek(position) != '"') {
+        if (_peek(position) == '\n') {
+            ++line;
+        }
+        ++position;
+    }
+
+    // TODO: raise an error if the closing quote is missing.
+    if (not _is_at_end(position)) {
+        ++position;
+    }
+
+    tokens.push_back(Token(TokenType::STRING_LITERAL, input.substr(start, position - start), line));
+}
+
 void lexer::_consume_alphanumeric(std::size_t &position) {
     do {
         ++position;
@@ -82,6 +101,10 @@ std::vector<Token> lexer::lex() {
             _skip_whitespace_and_comments(position, line);
             continue;
         }
+
+        if (current == '"') {
+            _consume_string_literal(position, line);
+            continue;
         }
 
         const std::size_t start = position;

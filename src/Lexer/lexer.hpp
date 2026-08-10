@@ -20,7 +20,7 @@ class lexer {
     }
 
     void _skip_whitespace_and_comments(std::size_t &position, int &line);
-    char _peek(const int &position) { return input[position + 1]; }
+    void _consume_string_literal(std::size_t &position, int &line);
     void _consume_alphanumeric(std::size_t &position);
     void _consume_special_sequence_or_operator(std::size_t &position);
 
