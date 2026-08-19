@@ -13,11 +13,12 @@ bool lexer::is_alphanumeric(const char &c) {
 }
 
 bool lexer::is_special_character(const char &c) {
-    return (c == '(' || c == ')' || c == ';' || c == ':' || c == '-' || c == '>' || c == '/');
+    return (c == '(' || c == ')' || c == '{' || c == '}' || c == ',' || c == ';' ||
+            c == ':' || c == '+' || c == '-' || c == '*' || c == '/' || c == '=');
 }
 
 bool lexer::is_special_sequence(const std::string_view &sequence) {
-    return (sequence == "->" || sequence == "::");
+    return (sequence == "->" || sequence == "::" || sequence == "+=");
 }
 
 void lexer::_skip_whitespace_and_comments(std::size_t &position, int &line) {
@@ -66,16 +67,23 @@ void lexer::_consume_string_literal(std::size_t &position, int &line) {
     tokens.push_back(Token(TokenType::STRING_LITERAL, input.substr(start, position - start), line));
 }
 
-void lexer::_consume_numeric(std::size_t &position) {
+void lexer::_consume_numeric_literal(std::size_t &position) {
     do {
         ++position;
     } while (not _is_at_end(position) && std::isdigit(static_cast<unsigned char>(_peek(position))));
+    if (not _is_at_end(position) && _peek(position) == '.') {
+        ++position;
+        while (not _is_at_end(position) &&
+               std::isdigit(static_cast<unsigned char>(_peek(position)))) {
+            ++position;
+        }
+    }
 }
 
-void lexer::_consume_alpha(std::size_t &position) {
+void lexer::_consume_alphanumeric(std::size_t &position) {
     do {
         ++position;
-    } while (not _is_at_end(position) && is_alpha(_peek(position)));
+    } while (not _is_at_end(position) && is_alphanumeric(_peek(position)));
 }
 
 void lexer::_consume_special_sequence_or_operator(std::size_t &position) {
@@ -103,7 +111,7 @@ std::vector<Token> lexer::lex() {
             continue;
         }
 
-        if (current == '/' && position + 1 < input.length() && _peek(position + 1) == '/') {
+        if (current == '/' && not _is_at_end(position + 1) && _peek(position + 1) == '/') {
             _skip_whitespace_and_comments(position, line);
             continue;
         }
@@ -116,9 +124,9 @@ std::vector<Token> lexer::lex() {
         const std::size_t start = position;
 
         if (is_alpha(current)) {
-            _consume_alpha(position);
+            _consume_alphanumeric(position);
         } else if (std::isdigit(static_cast<unsigned char>(current))) {
-            _consume_numeric(position);
+            _consume_numeric_literal(position);
         } else if (is_special_character(current)) {
             _consume_special_sequence_or_operator(position);
         } else {
@@ -130,6 +138,6 @@ std::vector<Token> lexer::lex() {
         tokens.push_back(_generate_token(lexeme, line));
     }
 
-    tokens.push_back(Token(TokenType::EOF_TOKEN, "", 0));
+    tokens.push_back(Token(TokenType::EOF_TOKEN, "", line));
     return tokens;
 };

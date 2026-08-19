@@ -6,17 +6,43 @@
 
 enum class TokenType {
     IDENTIFIER,
+
+    STRING_LITERAL,
+    NUMERIC_LITERAL,
+
     L_BRACKET,
     R_BRACKET,
-    STRING_LITERAL,
+    L_BRACE,
+    R_BRACE,
+    COMMA,
+    // Types
     INT,
     FLOAT,
     STRING,
-    OPERATOR,
+    DYNAMIC,
+    BOOL,
+    NONE,
+
+    // Operators
+    ADD,
+    ADD_ASSIGN,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+    ASSIGN,
+
+    // Keywords
+    IF,
+    ELSE,
+    FUNCTION,
+    RETURN,
+
+    // Special sequences
     RETURN_MARKER,
     TYPE_MARKER,
     SCOPE_RESOLUTION,
     LINE_END,
+
     EOF_TOKEN,
 };
 

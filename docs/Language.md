@@ -28,6 +28,10 @@ function my_funct(int my_int, dynamic my_unknown) -> int {
 
 - Comment syntax: // for single line, """for docstring""".  
 
+## Literals and identifiers
+
+- Numbers are not accepted at the start of identifiers (e.g. function 5_loops) but are allowed in the middle or end.  
+
 ## Types and values
 
 Basic types are be:
