@@ -21,7 +21,8 @@ class lexer {
 
     void _skip_whitespace_and_comments(std::size_t &position, int &line);
     void _consume_string_literal(std::size_t &position, int &line);
-    void _consume_alphanumeric(std::size_t &position);
+    void _consume_alpha(std::size_t &position);
+    void _consume_numeric(std::size_t &position);
     void _consume_special_sequence_or_operator(std::size_t &position);
 
     Token _generate_token(const std::string &lexeme, const int &line) {
