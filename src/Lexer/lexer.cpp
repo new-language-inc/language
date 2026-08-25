@@ -13,8 +13,8 @@ bool lexer::is_alphanumeric(const char &c) {
 }
 
 bool lexer::is_special_character(const char &c) {
-    return (c == '(' || c == ')' || c == '{' || c == '}' || c == ',' || c == ';' ||
-            c == ':' || c == '+' || c == '-' || c == '*' || c == '/' || c == '=');
+    return (c == '(' || c == ')' || c == '{' || c == '}' || c == ',' || c == ';' || c == ':' ||
+            c == '+' || c == '-' || c == '*' || c == '/' || c == '=');
 }
 
 bool lexer::is_special_sequence(const std::string_view &sequence) {
@@ -63,8 +63,6 @@ void lexer::_consume_string_literal(std::size_t &position, int &line) {
     if (not _is_at_end(position)) {
         ++position;
     }
-
-    tokens.push_back(Token(TokenType::STRING_LITERAL, input.substr(start, position - start), line));
 }
 
 void lexer::_consume_numeric_literal(std::size_t &position) {

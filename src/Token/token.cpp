@@ -1,11 +1,14 @@
 #include "token.hpp"
 
-#include <unordered_map>
 #include <cctype>
+#include <unordered_map>
 
 TokenType scan_token_type(const std::string_view &token) {
     if (!token.empty() && std::isdigit(static_cast<unsigned char>(token.front()))) {
         return TokenType::NUMERIC_LITERAL;
+    }
+    if (token.size() >= 2 && token.front() == '"' && token.back() == '"') {
+        return TokenType::STRING_LITERAL;
     }
 
     static const std::unordered_map<std::string_view, TokenType> token_map = {
