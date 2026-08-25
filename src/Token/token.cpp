@@ -7,10 +7,6 @@ TokenType scan_token_type(const std::string_view &token) {
     if (!token.empty() && std::isdigit(static_cast<unsigned char>(token.front()))) {
         return TokenType::NUMERIC_LITERAL;
     }
-    if (token.size() >= 2 && token.front() == '"' && token.back() == '"') {
-        return TokenType::STRING_LITERAL;
-    }
-
     static const std::unordered_map<std::string_view, TokenType> token_map = {
         // Types
         {"int", TokenType::INT},
@@ -43,9 +39,6 @@ TokenType scan_token_type(const std::string_view &token) {
         {"else", TokenType::ELSE},
         {"function", TokenType::FUNCTION},
         {"return", TokenType::RETURN}};
-    if (token_map.contains(token)) {
-        return token_map.at(token);
-    } else {
-        return TokenType::IDENTIFIER;
-    }
+    const auto result = token_map.find(token);
+    return result == token_map.end() ? TokenType::IDENTIFIER : result->second;
 }

@@ -27,6 +27,7 @@ function my_funct(int my_int, dynamic my_unknown) -> int {
 ## Lexical structure
 
 - Comment syntax: // for single line, """for docstring""".  
+- String literals use double quotes. The supported escape sequences are `\"`, `\\`, `\n`, `\r`, and `\t`.
 
 ## Literals and identifiers
 
