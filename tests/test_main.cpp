@@ -1,4 +1,4 @@
-#include "test_lexer.cpp"
+void test_lexer();
 
 int main() {
     test_lexer();
