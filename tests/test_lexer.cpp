@@ -4,6 +4,11 @@
 #include <stdexcept>
 
 void test_lexer() {
+    lexer boolean_literals{"true false"};
+    const auto boolean_tokens = boolean_literals.lex();
+    assert(boolean_tokens[0].type == TokenType::TRUE);
+    assert(boolean_tokens[1].type == TokenType::FALSE);
+
     lexer lex("int x = 5;");
     auto tokens = lex.lex();
 

@@ -15,6 +15,8 @@ TokenType scan_token_type(const std::string_view &token) {
         {"dynamic", TokenType::DYNAMIC},
         {"bool", TokenType::BOOL},
         {"none", TokenType::NONE},
+        {"true", TokenType::TRUE},
+        {"false", TokenType::FALSE},
         // Special sequences
         {"->", TokenType::RETURN_MARKER},
         {":", TokenType::TYPE_MARKER},

@@ -22,6 +22,8 @@ enum class TokenType {
     DYNAMIC,
     BOOL,
     NONE,
+    TRUE,
+    FALSE,
 
     // Operators
     ADD,
