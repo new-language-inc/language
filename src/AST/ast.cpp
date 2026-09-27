@@ -1,5 +1,6 @@
 #include "ast.hpp"
 
+#include <iostream>
 #include <utility>
 
 number_expr::number_expr(const double value) : value(value) {}
@@ -27,7 +28,7 @@ variable_decl_stmt::variable_decl_stmt(const TokenType type, std::string name, e
 block_stmt::block_stmt(std::vector<stmt_ptr> statements) : statements(std::move(statements)) {}
 
 if_stmt::if_stmt(expr_ptr condition, std::unique_ptr<block_stmt> then_branch,
-                std::unique_ptr<block_stmt> else_branch)
+                 std::unique_ptr<block_stmt> else_branch)
     : condition(std::move(condition)), then_branch(std::move(then_branch)),
       else_branch(std::move(else_branch)) {}
 
@@ -39,3 +40,7 @@ function_stmt::function_stmt(std::string name, std::vector<parameter> parameters
       body(std::move(body)) {}
 
 program::program(std::vector<stmt_ptr> statements) : statements(std::move(statements)) {}
+
+void ast::LogError(const char *str, int line) const {
+    std::cerr << "AST error on line " << line << ": " << str << std::endl;
+}

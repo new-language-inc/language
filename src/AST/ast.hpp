@@ -146,4 +146,13 @@ class program : public stmt {
     std::vector<stmt_ptr> statements;
 };
 
+class ast {
+  public:
+    explicit ast(std::unique_ptr<program> root) : root(std::move(root)) {}
+
+    std::unique_ptr<program> root;
+
+    void LogError(const char *str, int line) const;
+};
+
 #endif // AST_HPP
